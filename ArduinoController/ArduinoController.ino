@@ -39,7 +39,7 @@ void loop(){
     lastBValue=arr[5];
   }
   
-  if(redpin>0 && greenpin>0 && bluepin>0){
+  if(redpin>-1 && greenpin>-1 && bluepin>-1){
     pinMode (redpin, OUTPUT);
     pinMode (greenpin, OUTPUT);
     pinMode (bluepin, OUTPUT);
