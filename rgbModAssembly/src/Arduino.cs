@@ -36,6 +36,12 @@ namespace rgbMod
             return;
         }
 
+        /// <summary>
+        /// The sendMSG method sends the colors that the arduino should display
+        /// </summary>
+        /// <param name="msg">Message. Syntax: "redPinNum greenPinNum bluePinNum redValueNum greenValueNum blueValueNum"</param>
+
+
         public void sendMSG(string msg)
         {
             if (_connected)
