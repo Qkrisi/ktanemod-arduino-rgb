@@ -40,13 +40,16 @@ namespace rgbMod
         /// The sendMSG method sends the colors that the arduino should display
         /// </summary>
         /// <param name="msg">Message. Syntax: "redPinNum greenPinNum bluePinNum redValueNum greenValueNum blueValueNum"</param>
-
-
         public void sendMSG(string msg)
         {
-            if (_connected)
+            int tried = 0;
+            string[] splitted = msg.Split(' ');
+            if (splitted.Length == 6)
             {
-                port.WriteLine(msg);
+                if (int.TryParse(splitted[0], out tried) && int.TryParse(splitted[1], out tried) && int.TryParse(splitted[2], out tried) && int.TryParse(splitted[3], out tried) && int.TryParse(splitted[4], out tried) && int.TryParse(splitted[5], out tried) && _connected)
+                {
+                    port.WriteLine(msg);
+                }
             }
             return;
         }
