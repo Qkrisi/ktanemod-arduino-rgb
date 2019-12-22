@@ -46,7 +46,7 @@ namespace rgbMod
             string[] splitted = msg.Split(' ');
             if (splitted.Length == 6)
             {
-                if (int.TryParse(splitted[0], out tried) && int.TryParse(splitted[1], out tried) && int.TryParse(splitted[2], out tried) && int.TryParse(splitted[3], out tried) && int.TryParse(splitted[4], out tried) && int.TryParse(splitted[5], out tried) && _connected)
+                if (_connected && (int.TryParse(splitted[0], out tried) && int.TryParse(splitted[1], out tried) && int.TryParse(splitted[2], out tried) && int.TryParse(splitted[3], out tried) && int.TryParse(splitted[4], out tried) && int.TryParse(splitted[5], out tried))) //Checks if the arduino is connected and if every part of the message is an integer
                 {
                     port.WriteLine(msg);
                 }
