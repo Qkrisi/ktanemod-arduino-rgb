@@ -1,6 +1,6 @@
-int redpin = 0;
-int greenpin = 0;
-int bluepin = 0;
+int redpin = -1;
+int greenpin = -1;
+int bluepin = -1;
 int lastRValue = 0;
 int lastGValue = 0;
 int lastBValue = 0;
@@ -31,12 +31,12 @@ void loop(){
         p = strtok(NULL, " ");
     }
       
-    redpin=arr[0];
-    greenpin=arr[1];
+    redpin=arr[1];
+    greenpin=arr[0];
     bluepin=arr[2];
-    lastRValue=arr[3];
-    lastGValue=arr[4];
-    lastBValue=arr[5];
+    lastRValue=arr[3] % 256;
+    lastGValue=arr[4] % 256;
+    lastBValue=arr[5] % 256;
   }
   
   if(redpin>-1 && greenpin>-1 && bluepin>-1){
