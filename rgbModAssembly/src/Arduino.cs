@@ -10,7 +10,7 @@ namespace rgbMod
 
         public void Connect(string name, int baudRate)
         {
-            if (Array.IndexOf(getAvailablePorts(), name) > -1)
+            if (Array.IndexOf(getAvailablePorts(), name) > -1 && !_connected)
             {
                 port = new SerialPort(name, baudRate);
                 try
