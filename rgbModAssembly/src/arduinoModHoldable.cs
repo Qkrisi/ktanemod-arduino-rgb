@@ -84,17 +84,8 @@ public class arduinoModHoldable : MonoBehaviour
 
     private bool testBTNAction()
     {
-        StartCoroutine(Test());
-        return false;
-    }
-
-    private IEnumerator Test()
-    {
-        yield return null;
         arduinoConnection.sendMSG("5 3 4 255 255 255");
-        yield return new WaitForSeconds(3f);
-        arduinoConnection.sendMSG("5 3 4 0 0 0");
-        yield break;
+        return false;
     }
 
     private bool refreshBTNAction()
@@ -128,14 +119,12 @@ public class arduinoModHoldable : MonoBehaviour
         }
         for (int i = 0; i < ports.Length; i++)
         {
-            connectBTNs.Add(Instantiate(connectBTNs[0], new Vector3(0,0,0), new Quaternion(0,0,0,0)));
+            connectBTNs.Add(Instantiate(connectBTNs[0], new Vector3(connectBTNs[0].transform.position.x, connectBTNs[0].transform.position.y, connectBTNs[0].transform.position.z - (0.05f*(i+1))), new Quaternion(0,0,0,0)));
         }
         for(int i = 0; i < ports.Length; i++)
         {
             connectBTNs[i].transform.Find("buttonText").gameObject.GetComponent<TextMesh>().text = ports[i];
             connectBTNs[i].transform.parent = mainHoldable.gameObject.GetComponent<Transform>();
-            if (i == 0) { continue; }
-            connectBTNs[i].transform.localPosition = new Vector3(connectBTNs[0].transform.localPosition.x, connectBTNs[0].transform.localPosition.y, connectBTNs[0].transform.localPosition.z - (0.05f * (i + 1)));
         }
         connectBTNs[connectBTNs.Count-1].transform.parent = mainHoldable.gameObject.GetComponent<Transform>();
         GameObject btnToRemove = connectBTNs[connectBTNs.Count - 1];
@@ -147,6 +136,7 @@ public class arduinoModHoldable : MonoBehaviour
             item.GetComponent<Renderer>().enabled = true;
             childrenBTNs.Add(item.GetComponent<KMSelectable>());
         }
+        Debug.Log("Got there!");
         mainHoldable.Children = childrenBTNs.ToArray();
     }
 
