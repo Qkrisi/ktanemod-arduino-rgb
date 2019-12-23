@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO.Ports;
-using UnityEngine;
 
 namespace rgbMod.Arduino
 {
