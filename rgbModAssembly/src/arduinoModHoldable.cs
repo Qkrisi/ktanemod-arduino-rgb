@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using rgbMod.Arduino;
@@ -62,7 +63,7 @@ public class arduinoModHoldable : MonoBehaviour
         }
         Frame.GetComponent<Renderer>().material = yellowOBJ.GetComponent<Renderer>().material;
         arduinoConnection.Connect(portName, 9600);
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(1.5f);
         if (arduinoConnection._connected)
         {
             Frame.GetComponent<Renderer>().material = greenOBJ.GetComponent<Renderer>().material;
@@ -118,7 +119,7 @@ public class arduinoModHoldable : MonoBehaviour
         }
         for (int i = 0; i < ports.Length; i++)
         {
-            connectBTNs.Add(Instantiate(connectBTNs[i], new Vector3(connectBTNs[0].transform.position.x, connectBTNs[0].transform.position.y, connectBTNs[0].transform.position.z - (0.05f*(i+1))), new Quaternion(0,0,0,0)));
+            connectBTNs.Add(Instantiate(connectBTNs[0], new Vector3(connectBTNs[0].transform.position.x, connectBTNs[0].transform.position.y, connectBTNs[0].transform.position.z - (0.05f*(i+1))), new Quaternion(0,0,0,0)));
         }
         for(int i = 0; i < ports.Length; i++)
         {
@@ -137,5 +138,52 @@ public class arduinoModHoldable : MonoBehaviour
         }
         Debug.Log("Got there!");
         mainHoldable.Children = childrenBTNs.ToArray();
+    }
+
+    string TwitchHelpMessage = "Commands are: '!{0} disconnect'; '!{0} refresh'; '!{0} test'; '!{0} connect x' where x is the position of the correct connect button from top to bottom. Only the streamer can run these commands.";
+    IEnumerator ProcessTwitchCommand(string command)
+    {
+        command = command.ToLowerInvariant();
+        if (command == "disconnect")
+        {
+            yield return null;
+            yield return new object[] { "streamer", (Action)(() => DisconnectButton.OnInteract()), "This command is for the streamer only." };
+        }
+        if (command == "refresh")
+        {
+            yield return null;
+            yield return new object[] { "streamer", (Action)(() => RefreshButton.OnInteract()), "This command is for the streamer only." };
+        }
+        if (command == "test")
+        {
+            yield return null;
+            yield return new object[] { "streamer", (Action)(() => TestButton.OnInteract()), "This command is for the streamer only." };
+        }
+        if (command.StartsWith("connect", StringComparison.InvariantCulture))
+        {
+            command = command.Replace("connect ", "");
+            yield return null;
+            if(!int.TryParse(command, out int num))
+            {
+                yield return "sendtochaterror Number not valid!";
+                yield break;
+            }
+            if(num<1 || num > connectBTNs.Count)
+            {
+                yield return "sendtochaterror Number out of range!";
+                yield break;
+            }
+            yield return new object[] { "streamer", (Action)(() => connectBTNs[num-1].GetComponent<KMSelectable>().OnInteract()), "This command is for the streamer only." };
+            yield return String.Format("sendtochat Connecting to {0}", connectBTNs[num-1].transform.Find("buttonText").gameObject.GetComponent<TextMesh>().text);
+            yield return new WaitForSeconds(1.51f);
+            if (arduinoConnection._connected)
+            {
+                yield return "sendtochat PraiseIt Connection succesful! PraiseIt";
+            }
+            else
+            {
+                yield return "sendtochat VoteNay Connection failed! VoteNay";
+            }
+        }
     }
 }
