@@ -42,6 +42,7 @@ public class arduinoModHoldable : MonoBehaviour
         RefreshButton.OnInteract += refreshBTNAction;
         TestButton.OnInteract += testBTNAction;
         Refresh();
+        RefreshButton.OnInteract();
     }
 
 
@@ -117,7 +118,7 @@ public class arduinoModHoldable : MonoBehaviour
         }
         for (int i = 0; i < ports.Length; i++)
         {
-            connectBTNs.Add(Instantiate(connectBTNs[i], new Vector3(connectBTNs[i].transform.position.x, connectBTNs[i].transform.position.y, connectBTNs[i].transform.position.z - 0.05f), Quaternion.identity));
+            connectBTNs.Add(Instantiate(connectBTNs[i], new Vector3(connectBTNs[0].transform.position.x, connectBTNs[0].transform.position.y, connectBTNs[0].transform.position.z - (0.05f*(i+1))), new Quaternion(0,0,0,0)));
         }
         for(int i = 0; i < ports.Length; i++)
         {

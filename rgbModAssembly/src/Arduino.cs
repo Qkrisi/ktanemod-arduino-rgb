@@ -30,8 +30,15 @@ namespace rgbMod.Arduino
         {
             if (_connected)
             {
-                port.Close();
-                _connected = false;
+                try
+                {
+                    sendMSG("9999999 9999999 9999999 0 0 0");
+                    port.Close();
+                }
+                finally
+                {
+                    _connected = false;
+                }
             }
             return;
         }
@@ -39,7 +46,7 @@ namespace rgbMod.Arduino
         /// <summary>
         /// The sendMSG method sends the colors that the arduino should display
         /// </summary>
-        /// <param name="msg">Message. Syntax: "redPinNum greenPinNum bluePinNum redValueNum greenValueNum blueValueNum"</param>
+        /// <param name="msg">Message. Syntax: "redPinNum greenPinNum bluePinNum redValueNum greenValueNum blueValueNum". 9999999 as red pin will turn the led off</param>
         public void sendMSG(string msg)
         {
             int tried = 0;
