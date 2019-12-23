@@ -43,7 +43,6 @@ public class arduinoModHoldable : MonoBehaviour
         RefreshButton.OnInteract += refreshBTNAction;
         TestButton.OnInteract += testBTNAction;
         Refresh();
-        RefreshButton.OnInteract();
     }
 
 
@@ -84,8 +83,17 @@ public class arduinoModHoldable : MonoBehaviour
 
     private bool testBTNAction()
     {
-        arduinoConnection.sendMSG("5 3 4 255 255 255");
+        StartCoroutine(Test());
         return false;
+    }
+
+    private IEnumerator Test()
+    {
+        yield return null;
+        arduinoConnection.sendMSG("5 3 4 255 255 255");
+        yield return new WaitForSeconds(3f);
+        arduinoConnection.sendMSG("5 3 4 0 0 0");
+        yield break;
     }
 
     private bool refreshBTNAction()
@@ -119,7 +127,7 @@ public class arduinoModHoldable : MonoBehaviour
         }
         for (int i = 0; i < ports.Length; i++)
         {
-            connectBTNs.Add(Instantiate(connectBTNs[0], new Vector3(connectBTNs[0].transform.position.x, connectBTNs[0].transform.position.y, connectBTNs[0].transform.position.z - (0.05f*(i+1))), new Quaternion(0,0,0,0)));
+            connectBTNs.Add(Instantiate(connectBTNs[0], new Vector3(connectBTNs[0].transform.position.x, connectBTNs[0].transform.position.y, connectBTNs[0].transform.position.z - (0.05f * (i + 1))), new Quaternion(0,0,0,0)));
         }
         for(int i = 0; i < ports.Length; i++)
         {
