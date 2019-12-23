@@ -140,7 +140,9 @@ public class arduinoModHoldable : MonoBehaviour
         mainHoldable.Children = childrenBTNs.ToArray();
     }
 
+    #pragma warning disable 414
     string TwitchHelpMessage = "Commands are: '!{0} disconnect'; '!{0} refresh'; '!{0} test'; '!{0} connect x' where x is the position of the correct connect button from top to bottom. Only the streamer can run these commands.";
+    #pragma warning restore 414
     IEnumerator ProcessTwitchCommand(string command)
     {
         command = command.ToLowerInvariant();
