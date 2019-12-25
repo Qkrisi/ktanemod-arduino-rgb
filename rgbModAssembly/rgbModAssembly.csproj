@@ -105,6 +105,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\Arduino.cs" />
     <Compile Include="src\arduinoModHoldable.cs" />
+    <Compile Include="src\arduinoService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="rgbModAssembly.ruleset" />

@@ -32,7 +32,7 @@ namespace rgbMod.Arduino
             {
                 try
                 {
-                    sendMSG("9999999 9999999 9999999 0 0 0");
+                    Stop();
                     port.Close();
                 }
                 finally
@@ -41,6 +41,21 @@ namespace rgbMod.Arduino
                 }
             }
             return;
+        }
+
+        public void Stop()
+        {
+            if(_connected)
+            {
+                try
+                {
+                    sendMSG("9999999 9999999 9999999 0 0 0");
+                }
+                catch
+                {
+                    _connected = false;
+                }
+            }
         }
 
         /// <summary>
@@ -55,7 +70,14 @@ namespace rgbMod.Arduino
             {
                 if (_connected && (int.TryParse(splitted[0], out tried) && int.TryParse(splitted[1], out tried) && int.TryParse(splitted[2], out tried) && int.TryParse(splitted[3], out tried) && int.TryParse(splitted[4], out tried) && int.TryParse(splitted[5], out tried))) //Checks if the arduino is connected and if every part of the message is an integer
                 {
-                    port.WriteLine(msg);
+                    try 
+                    { 
+                        port.WriteLine(msg); 
+                    }
+                    catch
+                    {
+                        _connected = false;
+                    }
                 }
             }
             return;
