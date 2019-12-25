@@ -29,19 +29,18 @@ public class arduinoModHoldable : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("[Arduino Manager Holdable] Initialised");
         StartCoroutine(Setup());
     }
 
     private IEnumerator Setup()
     {
+        yield return new WaitForSeconds(0.1f);
         while (true)
         {
             yield return null;
             Service = FindObjectsOfType<arduinoService>()[0].GetComponent<arduinoService>();
             if (Service != null)
             {
-                Debug.Log("[Arduino Manager Holdable] Got it");
                 mainHoldable = this.GetComponent<KMSelectable>();
                 defaultChildren = mainHoldable.Children;
                 DisconnectButton = mainHoldable.Children[0];
@@ -126,22 +125,6 @@ public class arduinoModHoldable : MonoBehaviour
         return false;
     }
 
-    void resizeText(GameObject disp)
-    {
-        int pluschars = 0;
-        pluschars = disp.GetComponent<TextMesh>().text.Length - 10;
-        while (pluschars > 0)
-        {
-            disp.GetComponent<TextMesh>().fontSize = disp.GetComponent<TextMesh>().fontSize - 15;
-            if (disp.GetComponent<TextMesh>().fontSize < 45)
-            {
-                disp.GetComponent<TextMesh>().fontSize = disp.GetComponent<TextMesh>().fontSize + 20;
-            }
-            pluschars = pluschars - 1;
-        }
-        return;
-    }
-
     private void Refresh()
     {
         Button.GetComponent<Renderer>().enabled = false;
@@ -173,7 +156,6 @@ public class arduinoModHoldable : MonoBehaviour
         {
             connectBTNs[i].transform.Find("buttonText").gameObject.GetComponent<TextMesh>().text = ports[i];
             connectBTNs[i].transform.parent = mainHoldable.gameObject.GetComponent<Transform>();
-            resizeText(connectBTNs[i].transform.Find("buttonText").gameObject);
             if (i == 0) { continue; }
             connectBTNs[i].transform.localPosition = new Vector3(connectBTNs[0].transform.localPosition.x, connectBTNs[0].transform.localPosition.y, connectBTNs[0].transform.localPosition.z - (0.05f * i));
         }

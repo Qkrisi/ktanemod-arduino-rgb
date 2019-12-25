@@ -7,7 +7,6 @@ public class arduinoService : MonoBehaviour
     private KMGameInfo gameInfo;
 
     void Start(){
-        Debug.Log("[Arduino Manager] Initialised");
         gameInfo = GetComponent<KMGameInfo>();
     }
 }
