@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO.Ports;
 
-namespace rgbMod.Arduino
+namespace rgbMod
 {
     public class Arduino
     {

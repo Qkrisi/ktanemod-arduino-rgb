@@ -54,6 +54,11 @@ MonoBehaviour:
   m_Script: {fileID: -621427725, guid: 1f8bd1e1353a04e47a6be1126fefd6ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameInfo: {fileID: 114867607096250528}
+  modSettings: {fileID: 114494902951061564}
+  RP: 3
+  GP: 4
+  BP: 5
 --- !u!114 &114494902951061564
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -66,7 +71,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Settings: "{\t\"redPin\":5,\t\"greenPin\":3,\t\"bluePin\":4}"
-  SettingsPath: 
+  SettingsPath: arduinoRGBSettings.txt
 --- !u!114 &114730106139275678
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
-using rgbMod.Arduino;
 
 public class arduinoModHoldable : MonoBehaviour
 {
@@ -113,7 +112,7 @@ public class arduinoModHoldable : MonoBehaviour
     private IEnumerator Test()
     {
         yield return null;
-        Service.arduinoConnection.sendMSG("5 3 4 255 255 255");
+        Service.arduinoConnection.sendMSG(String.Format("{0} {1} {2} 255 255 255", Service.RP, Service.GP, Service.BP));
         yield return new WaitForSeconds(3f);
         Service.arduinoConnection.Stop();
         yield break;
