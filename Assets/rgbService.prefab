@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 114494902951061564}
   - component: {fileID: 114867607096250528}
   - component: {fileID: 114494595297072374}
+  - component: {fileID: 114261465437611412}
   m_Layer: 0
   m_Name: rgbService
   m_TagString: Untagged
@@ -43,6 +44,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114261465437611412
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1554534635561090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 2144496390, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114494595297072374
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -55,10 +67,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameInfo: {fileID: 114867607096250528}
-  modSettings: {fileID: 114494902951061564}
   RP: 3
   GP: 4
   BP: 5
+  Baud: 0
 --- !u!114 &114494902951061564
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -70,8 +82,8 @@ MonoBehaviour:
   m_Script: {fileID: -289456416, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Settings: "{\t\"redPin\":5,\t\"greenPin\":3,\t\"bluePin\":4}"
-  SettingsPath: arduinoRGBSettings.txt
+  Settings: "{\t\"redPin\":3,\t\"greenPin\":4,\t\"bluePin\":5,\t\"baudRate\":9600,\t\"enableModuleImplementation\":true}"
+  SettingsPath: arduinoRGBSettings.json
 --- !u!114 &114730106139275678
 MonoBehaviour:
   m_ObjectHideFlags: 1

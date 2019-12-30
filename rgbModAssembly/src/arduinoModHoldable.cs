@@ -37,7 +37,9 @@ public class arduinoModHoldable : MonoBehaviour
         while (true)
         {
             yield return null;
-            Service = FindObjectsOfType<arduinoService>()[0].GetComponent<arduinoService>();
+            arduinoService[] Services = FindObjectsOfType<arduinoService>();
+            if (Services.Length > 0) { Service = Services[0]; }
+            else { Service = null; }
             if (Service != null)
             {
                 mainHoldable = this.GetComponent<KMSelectable>();
@@ -65,6 +67,7 @@ public class arduinoModHoldable : MonoBehaviour
     }
 
 
+
     private bool ConnectBTNAction(string portName)
     {
         if (Service != null) { StartCoroutine(attemptConnection(portName)); }
@@ -80,7 +83,8 @@ public class arduinoModHoldable : MonoBehaviour
             Service.arduinoConnection.Disconnect();
         }
         Frame.GetComponent<Renderer>().material = yellowOBJ.GetComponent<Renderer>().material;
-        Service.arduinoConnection.Connect(portName, 9600);
+        Service.setPins();
+        Service.arduinoConnection.Connect(portName, Service.Baud);
         yield return new WaitForSeconds(1.5f);
         if (Service.arduinoConnection._connected)
         {
@@ -112,6 +116,7 @@ public class arduinoModHoldable : MonoBehaviour
     private IEnumerator Test()
     {
         yield return null;
+        Service.setPins();
         Service.arduinoConnection.sendMSG(String.Format("{0} {1} {2} 255 255 255", Service.RP, Service.GP, Service.BP));
         yield return new WaitForSeconds(3f);
         Service.arduinoConnection.Stop();

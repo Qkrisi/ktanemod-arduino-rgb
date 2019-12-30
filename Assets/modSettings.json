@@ -1,0 +1,7 @@
+{
+	"redPin":3,
+	"greenPin":4,
+	"bluePin":5,
+	"baudRate":9600,
+	"enableModuleImplementation":true
+}
