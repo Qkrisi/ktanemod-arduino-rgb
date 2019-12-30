@@ -1,5 +1,0 @@
-{
-	"redPin":3,
-	"greenPin":4,
-	"bluePin":5
-}
