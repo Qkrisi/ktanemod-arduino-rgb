@@ -20,7 +20,7 @@ public class arduinoService : MonoBehaviour
     public Settings ModSettings;
 
     public Arduino arduinoConnection = new Arduino();
-    public KMGameInfo gameInfo;
+    private KMGameInfo gameInfo;
 
     private KMGameInfo.State currentState;
 
@@ -34,14 +34,29 @@ public class arduinoService : MonoBehaviour
     private List<int> currentValues = new List<int>() { 0, 0, 0 };
     private List<int> previousValues = new List<int>() { 0, 0, 0 };
 
+    [HideInInspector]
     public int Baud;
 
-    private bool implementationEnabled;
+    [HideInInspector]
+    public bool implementationEnabled;
 
+    private KMBombInfo bombInfo;
+
+    private int lastStrikes = 0;
+    private int lastSolves = 0;
+
+    #pragma warning disable 414
+    private int bombState = 0; //0 means runnig, 1 means exploded, 2 means defused
+    #pragma warning restore 414
     void Start()
     {
+        gameInfo = this.GetComponent<KMGameInfo>();
         gameInfo.OnStateChange += OnStateChange;
+        bombInfo = this.GetComponent<KMBombInfo>();
+        bombInfo.OnBombExploded += OnBombExplodes;
+        bombInfo.OnBombSolved += OnBombDefused;
         setPins();
+        //StartCoroutine(checkBombState());
     }
 
     public void setPins()
@@ -61,7 +76,17 @@ public class arduinoService : MonoBehaviour
     { 
         currentState = state;
         setPins();
-        StartCoroutine(getField());
+        if (currentState != KMGameInfo.State.PostGame) { arduinoConnection.Stop(); }
+        if (currentState == KMGameInfo.State.Gameplay) 
+        {
+            bombState = 0;
+            lastStrikes = 0;
+            lastSolves = 0;
+            StartCoroutine(getField());
+            StartCoroutine(Warning());
+            StartCoroutine(OnStrike());
+            StartCoroutine(OnSolve());
+        }
     }
 
     private IEnumerator getField()
@@ -82,6 +107,105 @@ public class arduinoService : MonoBehaviour
         previousValues = new List<int>() {0, 0, 0};
         yield break;
     }
+
+    /*private IEnumerator checkBombState()
+    {
+        while (true)
+        {
+            yield return null;
+            if (currentState == KMGameInfo.State.PostGame)
+            {
+                switch (bombState)
+                {
+                    case 1:
+                        arduinoConnection.sendMSG(String.Format("{0} {1} {2} 255 0 0", RP, GP, BP));
+                        break;
+                    case 2:
+                        arduinoConnection.sendMSG(String.Format("{0} {1} {2} 0 0 255", RP, GP, BP));
+                        break;
+                    default:
+                        arduinoConnection.Stop();
+                        break;
+                }
+            }
+        }
+    }*/
+
+    #region BombEvents
+    private void OnBombExplodes()
+    {
+        bombState = 1;
+        arduinoConnection.sendMSG(String.Format("{0} {1} {2} 255 0 0", RP, GP, BP));
+    }
+
+    private void OnBombDefused()
+    {
+        bombState = 2;
+        arduinoConnection.sendMSG(String.Format("{0} {1} {2} 0 0 255", RP, GP, BP));
+    }
+
+    private IEnumerator Warning()
+    {
+        yield return null;
+        while(currentState==KMGameInfo.State.Gameplay && !implementationEnabled)
+        {
+            yield return null;
+            if (bombInfo.GetTime() < 60 && bombInfo.GetSolvedModuleNames().Count<bombInfo.GetSolvableModuleNames().Count)
+            {
+                yield return null;
+                yield return new WaitForSeconds(1.5f);
+                arduinoConnection.sendMSG(String.Format("{0} {1} {2} 200 0 0", RP, GP, BP));
+                yield return new WaitForSeconds(1.5f);
+                if (currentState == KMGameInfo.State.Gameplay) { arduinoConnection.Stop(); }
+                if (bombInfo.GetSolvedModuleNames().Count >= bombInfo.GetSolvableModuleNames().Count)
+                {
+                    OnBombDefused();
+                }
+            }
+            else if(bombInfo.GetSolvedModuleNames().Count >= bombInfo.GetSolvableModuleNames().Count)
+            {
+                OnBombDefused();
+            }
+        }
+        yield break;
+    }
+
+    private IEnumerator OnStrike()
+    {
+        yield return null;
+        while (currentState == KMGameInfo.State.Gameplay)
+        {
+            yield return null;
+            if(bombInfo.GetStrikes() > lastStrikes && (bombInfo.GetTime()>=60 || implementationEnabled))
+            {
+                yield return null;
+                lastStrikes = bombInfo.GetStrikes();
+                arduinoConnection.sendMSG(String.Format("{0} {1} {2} 255 0 0", RP, GP, BP));
+                yield return new WaitForSeconds(1.5f);
+                if (currentState == KMGameInfo.State.Gameplay) { arduinoConnection.Stop(); }
+            }
+        }
+        yield break;
+    }
+
+    private IEnumerator OnSolve()
+    {
+        yield return null;
+        while (currentState == KMGameInfo.State.Gameplay)
+        {
+            yield return null;
+            if (bombInfo.GetSolvedModuleNames().Count > lastSolves && bombInfo.GetSolvedModuleNames().Count < bombInfo.GetSolvableModuleNames().Count)
+            {
+                yield return null;
+                lastSolves = bombInfo.GetSolvedModuleNames().Count;
+                arduinoConnection.sendMSG(String.Format("{0} {1} {2} 0 255 0", RP, GP, BP));
+                yield return new WaitForSeconds(1.5f);
+                if (currentState == KMGameInfo.State.Gameplay) { arduinoConnection.Stop(); }
+            }
+        }
+        yield break;
+    }
+    #endregion
 
     private List<int> getPins()
     {

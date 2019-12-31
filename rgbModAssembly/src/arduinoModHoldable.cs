@@ -119,6 +119,7 @@ public class arduinoModHoldable : MonoBehaviour
         Service.setPins();
         Service.arduinoConnection.sendMSG(String.Format("{0} {1} {2} 255 255 255", Service.RP, Service.GP, Service.BP));
         yield return new WaitForSeconds(3f);
+        Debug.LogFormat("[Arduino Manager Holdable] Pins are: {0}, {1}, {2}. Baud rate is {3}. Implementation enabled: {4}", Service.RP, Service.GP, Service.BP, Service.Baud, Service.implementationEnabled);
         Service.arduinoConnection.Stop();
         yield break;
     }
