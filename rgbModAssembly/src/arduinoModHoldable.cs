@@ -60,13 +60,26 @@ public class arduinoModHoldable : MonoBehaviour
                 {
                     Frame.GetComponent<Renderer>().material = greenOBJ.GetComponent<Renderer>().material;
                 }
-                Refresh();
+                StartCoroutine(Refresh());
+                //StartCoroutine(getName());
                 yield break;
             }
         }
     }
 
-
+    /*private IEnumerator getName()
+    {
+        yield return null;
+        while (Service != null)
+        {
+            yield return null;
+            if (Service.currentState == KMGameInfo.State.Gameplay)
+            {
+                Debug.LogFormat("[Arduino Manager Holdable] The name of the held module is {0}, bomb active: {1}, module count is {2}, bomb count is {3}, bomb commander count is {4}", Service.currentModuleName, Service.BombActive, Service.Modules.Count, Service.Bombs.Count, Service.BombCommanders.Count);
+            }
+        }
+        yield break;
+    }*/
 
     private bool ConnectBTNAction(string portName)
     {
@@ -126,12 +139,13 @@ public class arduinoModHoldable : MonoBehaviour
 
     private bool refreshBTNAction()
     {
-        if (Service != null) { Refresh(); }
+        if (Service != null) { StartCoroutine(Refresh()); }
         return false;
     }
 
-    private void Refresh()
+    private IEnumerator Refresh()
     {
+        yield return null;
         Button.GetComponent<Renderer>().enabled = false;
         for (int i = 0; i < connectBTNs.Count; i++)
         {
@@ -175,7 +189,12 @@ public class arduinoModHoldable : MonoBehaviour
             childrenBTNs.Add(item.GetComponent<KMSelectable>());
         }
         Debug.Log("Got there!");
-        mainHoldable.Children = childrenBTNs.ToArray();
+        while (mainHoldable.Children.Length < childrenBTNs.Count)
+        {
+            yield return null;
+            mainHoldable.Children = childrenBTNs.ToArray();
+        }
+        yield break;
     }
 
     #pragma warning disable 414
