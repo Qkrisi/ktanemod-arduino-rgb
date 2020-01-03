@@ -74,6 +74,8 @@ public class arduinoService : MonoBehaviour
     #pragma warning restore 414
 
     private bool wait = false;
+
+    private FieldInfo outputValueField { get; set; }
     void Start()
     {
         gameInfo = this.GetComponent<KMGameInfo>();
@@ -149,30 +151,54 @@ public class arduinoService : MonoBehaviour
                 //Debug.Log("Bomb active!");
                 heldModule=GetFocusedModule();
             }
-            if(heldModule!=null && heldModule.IsSolved)
+            if (heldModule != null && heldModule.IsSolved && BombActive)
             {
                 //Debug.Log("Solved module selected: displaying green...");
-                while(heldModule!=null && heldModule.IsSolved)
+                while (heldModule != null && heldModule.IsSolved)
                 {
                     //Debug.Log("Updating module");
                     yield return null;
                     if (ableToDisplay) { ableToDisplay = false; arduinoConnection.sendMSG(String.Format("{0} {1} {2} 0 255 0", RP, GP, BP)); }
-                    heldModule=GetFocusedModule();
+                    heldModule = GetFocusedModule();
                 }
                 arduinoConnection.Stop();
                 ableToDisplay = true;
             }
-            else if(currentValues!=previousValues)
+            else if(heldModule!=null && BombActive)
             {
-                //Debug.Log("Values checked");
-                previousValues = currentValues;
-                arduinoConnection.sendMSG(String.Format("{0} {1} {2} {3} {4} {5}", RP, GP, BP, currentValues[0], currentValues[1], currentValues[2]));
+                Debug.LogFormat("Checking field... {0}", heldModule.ModuleName); 
+                List<int> outputValue = new List<int>();
+                foreach (var component in heldModule.BombComponent.GetComponentsInChildren<Component>(true))
+                {
+                    var type = component.GetType();
+                    outputValueField = type.GetField("rgbValues", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                    try { outputValue = (List<int>)outputValueField.GetValue(component); break; } catch { outputValue = new List<int>() { 0, 0, 0 }; }
+                }
+                if (outputValue != null && outputValue.Count>=3) currentValues = outputValue; Debug.LogFormat("Got values: {0}, {1}, {2}", currentValues[0], currentValues[1], currentValues[2]);
+                if (currentValues != previousValues)
+                { 
+                    previousValues = currentValues;
+                    arduinoConnection.sendMSG(String.Format("{0} {1} {2} {3} {4} {5}", RP, GP, BP, currentValues[0], currentValues[1], currentValues[2]));
+                }
             }
         }
         currentValues = new List<int>() { 0, 0, 0};
         previousValues = new List<int>() {0, 0, 0};
         yield break;
     }
+
+    /*
+    private Component getComponent(Module module)
+    {
+        Component outputcomponent = null;
+        foreach (var component in module.BombComponent.GetComponentsInChildren<Component>(true))
+        {
+            var type = component.GetType();
+            outputValueField = type.GetField("rgbValues", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+            if (outputValueField != null) { outputcomponent = component; break; }
+        }
+        return outputcomponent;
+    }*/   
 
     /*private IEnumerator checkBombState()
     {
@@ -391,7 +417,7 @@ public class arduinoService : MonoBehaviour
                 {
                     ComponentType = componentType,
                     IsKeyModule = keyModule,
-                    ModuleName = moduleName
+                    ModuleName = moduleName,
                 };
 
                 Modules.Add(module);
