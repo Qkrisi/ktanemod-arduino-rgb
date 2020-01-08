@@ -14,6 +14,7 @@ void loop(){
   if (Serial.available() > 0) {
  
     String s = Serial.readString();
+    Serial.println("done");
     _run=true;
     int n = s.length(); 
   

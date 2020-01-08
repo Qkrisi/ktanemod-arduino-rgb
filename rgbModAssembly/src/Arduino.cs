@@ -7,6 +7,7 @@ namespace rgbMod
     {
         public bool _connected = false;
         private SerialPort port;
+        private bool ableToSend = true;
 
         public void Connect(string name, int baudRate)
         {
@@ -68,19 +69,30 @@ namespace rgbMod
             string[] splitted = msg.Split(' ');
             if (splitted.Length == 6)
             {
-                if (_connected && (int.TryParse(splitted[0], out tried) && int.TryParse(splitted[1], out tried) && int.TryParse(splitted[2], out tried) && int.TryParse(splitted[3], out tried) && int.TryParse(splitted[4], out tried) && int.TryParse(splitted[5], out tried))) //Checks if the arduino is connected and if every part of the message is an integer
+                if (_connected && isAbleToSend() && (int.TryParse(splitted[0], out tried) && int.TryParse(splitted[1], out tried) && int.TryParse(splitted[2], out tried) && int.TryParse(splitted[3], out tried) && int.TryParse(splitted[4], out tried) && int.TryParse(splitted[5], out tried))) //Checks if the arduino is connected and if every part of the message is an integer
                 {
-                    try 
-                    { 
-                        port.WriteLine(msg); 
+                    try
+                    {
+                        port.WriteLine(msg);
+                        ableToSend = false;
                     }
                     catch
                     {
+                        ableToSend = true;
                         _connected = false;
                     }
                 }
             }
             return;
+        }
+
+        private bool isAbleToSend()
+        {
+            if(!ableToSend && !(port.ReadLine() == ""))
+            {
+                ableToSend = true;
+            }
+            return ableToSend;
         }
 
         public string[] getAvailablePorts()
