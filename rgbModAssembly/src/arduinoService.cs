@@ -78,6 +78,7 @@ public class arduinoService : MonoBehaviour
     #pragma warning restore 414
 
     private bool wait = false;
+    private bool stop = false;
 
     private FieldInfo outputValueField { get; set; }
     void Start()
@@ -125,14 +126,14 @@ public class arduinoService : MonoBehaviour
             StartCoroutine(Warning());
             StartCoroutine(OnStrike());
             StartCoroutine(OnSolve());
-            StartCoroutine(CheckForBomb());
+            StartCoroutine(CheckForBomb(true));
             StartCoroutine(FactoryCheck());
             StartCoroutine(getBomb());
         }
         else {
             currentModuleName = "";
             Modules.Clear();
-            StopCoroutine(CheckForBomb());
+            StopCoroutine(CheckForBomb(false));
             StopCoroutine(FactoryCheck());
             StopCoroutine(WaitUntilEndFactory());
             BombActive = false;
@@ -163,7 +164,7 @@ public class arduinoService : MonoBehaviour
                 {
                     //Debug.Log("Updating module");
                     yield return null;
-                    if (ableToDisplay) { ableToDisplay = false; arduinoConnection.sendMSG(String.Format("{0} {1} {2} 0 255 0", RP, GP, BP)); }
+                    if (ableToDisplay) { ableToDisplay = false; arduinoConnection.sendMSG(String.Format("{0} {1} {2} 0 255 0", RP, GP, BP)); stop = true; }
                     heldModule = GetFocusedModule();
                 }
                 arduinoConnection.Stop();
@@ -176,15 +177,23 @@ public class arduinoService : MonoBehaviour
                 foreach (var component in heldModule.BombComponent.GetComponentsInChildren<Component>(true))
                 {
                     var type = component.GetType();
-                    outputValueField = type.GetField("rgbValues", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                    outputValueField = type.GetField("arduinoRGBValues", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
                     try { outputValue = (List<int>)outputValueField.GetValue(component); break; } catch { outputValue = new List<int>() { 0, 0, 0 }; }
                 }
-                if (outputValue != null && outputValue.Count>=3) currentValues = outputValue; Debug.LogFormat("Got values: {0}, {1}, {2}", currentValues[0], currentValues[1], currentValues[2]);
+                if (outputValue != null && outputValue.Count>=3) currentValues = outputValue;
                 if (currentValues != previousValues)
                 { 
                     previousValues = currentValues;
                     arduinoConnection.sendMSG(String.Format("{0} {1} {2} {3} {4} {5}", RP, GP, BP, currentValues[0], currentValues[1], currentValues[2]));
+                    stop = true;
                 }
+            }
+            else if (heldModule == null && stop && currentState==KMGameInfo.State.Gameplay && arduinoConnection.isAbleToSend())
+            {
+                stop = false;
+                arduinoConnection.Stop();
+                currentValues = new List<int>() { 0, 0, 0 };
+                previousValues = new List<int>() { 0, 0, 0 };
             }
         }
         currentValues = new List<int>() { 0, 0, 0};
@@ -239,19 +248,33 @@ public class arduinoService : MonoBehaviour
         return;
     }
 
+    private IEnumerator forceSend(string msg)
+    {
+        yield return null;
+        yield return new WaitUntil(() => arduinoConnection.isAbleToSend());
+        arduinoConnection.sendMSG(msg);
+    }
+
+    private IEnumerator forceStop()
+    {
+        yield return null;
+        yield return new WaitUntil(() => arduinoConnection.isAbleToSend());
+        arduinoConnection.Stop();
+    }
+
     #region BombEvents
     private void OnBombExplodes()
     {
         bombState = 1;
         StopCoroutines();
-        arduinoConnection.sendMSG(String.Format("{0} {1} {2} 255 0 0", RP, GP, BP));
+        StartCoroutine(forceSend(String.Format("{0} {1} {2} 255 0 0", RP, GP, BP)));
     }
 
     private void OnBombDefused()
     {
         bombState = 2;
         StopCoroutines();
-        arduinoConnection.sendMSG(String.Format("{0} {1} {2} 0 0 255", RP, GP, BP));
+        StartCoroutine(forceSend(String.Format("{0} {1} {2} 0 0 255", RP, GP, BP)));
     }
 
     private IEnumerator Warning()
@@ -283,7 +306,7 @@ public class arduinoService : MonoBehaviour
     private IEnumerator OnStrike()
     {
         yield return null;
-        while (currentState == KMGameInfo.State.Gameplay)
+        while (currentState == KMGameInfo.State.Gameplay && !implementationEnabled)
         {
             yield return null;
             /*if(bombInfo.GetStrikes() > lastStrikes && (bombInfo.GetTime()>=60 || implementationEnabled))
@@ -294,7 +317,7 @@ public class arduinoService : MonoBehaviour
                 yield return new WaitForSeconds(1.5f);
                 if (currentState == KMGameInfo.State.Gameplay && ableToDisplay) { arduinoConnection.Stop(); }
             }*/
-            if (!wait && currentBomb!=null && currentBomb.StrikeCount > strikeCounts[currentBomb] && (currentBomb.CurrentTimer >= 60 || implementationEnabled))
+            if (!wait && currentBomb!=null && currentBomb.StrikeCount > strikeCounts[currentBomb] && currentBomb.CurrentTimer >= 60)
             {
                 yield return null;
                 strikeCounts[currentBomb] = currentBomb.StrikeCount;
@@ -309,7 +332,7 @@ public class arduinoService : MonoBehaviour
     private IEnumerator OnSolve()
     {
         yield return null;
-        while (currentState == KMGameInfo.State.Gameplay)
+        while (currentState == KMGameInfo.State.Gameplay && !implementationEnabled)
         {
             yield return null;
             /*if (bombInfo.GetSolvedModuleNames().Count > lastSolves && bombInfo.GetSolvedModuleNames().Count < bombInfo.GetSolvableModuleNames().Count)
@@ -376,7 +399,7 @@ public class arduinoService : MonoBehaviour
 
 
 
-    private IEnumerator CheckForBomb()
+    private IEnumerator CheckForBomb(bool first)
     {
         yield return new WaitUntil(() => SceneManager.Instance.GameplayState.Bombs != null && SceneManager.Instance.GameplayState.Bombs.Count > 0);
         yield return new WaitForSeconds(2.0f);
@@ -437,7 +460,9 @@ public class arduinoService : MonoBehaviour
             solveCounts.Add(commander, commander.SolveCount);
         }
         BombActive = true;
-        arduinoConnection.Stop();
+        if (first) arduinoConnection.Stop();
+        else StartCoroutine(forceStop());
+        stop = false;
         wait = false;
     }
 
@@ -542,7 +567,7 @@ public class arduinoService : MonoBehaviour
                 yield return new WaitForSeconds(0.10f);
             }
             
-            StartCoroutine(CheckForBomb());
+            StartCoroutine(CheckForBomb(false));
         }
     }
     //factory specific types

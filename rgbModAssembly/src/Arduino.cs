@@ -86,7 +86,7 @@ namespace rgbMod
             return;
         }
 
-        private bool isAbleToSend()
+        public bool isAbleToSend()
         {
             if(!ableToSend && !(port.ReadLine() == ""))
             {
