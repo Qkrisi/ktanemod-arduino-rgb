@@ -18,6 +18,7 @@ public class arduinoService : MonoBehaviour
         public int bluePin = 5;
         public int baudRate = 9600;
         public bool enableModuleImplementation = true;
+        public float processTime = 1.1f;
     }
 
     public Settings ModSettings;
@@ -43,6 +44,9 @@ public class arduinoService : MonoBehaviour
 
     [HideInInspector]
     public bool implementationEnabled;
+
+    [HideInInspector]
+    public float minimumWait;
 
     private KMBombInfo bombInfo;
 
@@ -97,6 +101,7 @@ public class arduinoService : MonoBehaviour
         BP = Pins[2];
         Baud = this.ModSettings.baudRate;
         implementationEnabled = this.ModSettings.enableModuleImplementation;
+        minimumWait = this.ModSettings.processTime;
         return;
     }
 
@@ -443,7 +448,18 @@ public class arduinoService : MonoBehaviour
             foreach (Module module in Modules)
 			{
 				module.Update();
-			}
+                setPins();
+                foreach (var component in module.BombComponent.GetComponentsInChildren<Component>(true))
+                {
+                    bool doBreak = false;
+                    var type = component.GetType();
+                    FieldInfo boolField = type.GetField("arduinoConnected", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                    if (boolField != null) { doBreak = true; try { boolField.SetValue(component, arduinoConnection._connected && implementationEnabled); } catch { Debug.Log("[Arduino Manager] arduinoConnected field is not a bool."); } }
+                    FieldInfo floatField = type.GetField("arduinoProcessTime", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                    if (floatField != null) { doBreak = true; try { floatField.SetValue(component, minimumWait); } catch { Debug.Log("[Arduino Manager] arduinoProcessTime field is not a float."); } }
+                    if (doBreak) { doBreak = false; break; }
+                }
+            }
         }
     }
 

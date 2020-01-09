@@ -3,5 +3,6 @@
 	"greenPin":4,
 	"bluePin":5,
 	"baudRate":9600,
-	"enableModuleImplementation":true
+	"enableModuleImplementation":true,
+	"processTime":1.1
 }
