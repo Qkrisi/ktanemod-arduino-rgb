@@ -18,7 +18,7 @@ public class arduinoService : MonoBehaviour
         public int bluePin = 5;
         public int baudRate = 9600;
         public bool enableModuleImplementation = true;
-        public float processTime = 1.1f;
+        public bool goAboveProcessTime = true;
     }
 
     public Settings ModSettings;
@@ -46,7 +46,7 @@ public class arduinoService : MonoBehaviour
     public bool implementationEnabled;
 
     [HideInInspector]
-    public float minimumWait;
+    public float minimumWait = 1.1f;
 
     private KMBombInfo bombInfo;
 
@@ -80,6 +80,9 @@ public class arduinoService : MonoBehaviour
     private bool wait = false;
     private bool stop = false;
 
+    [HideInInspector]
+    public bool goAbove = true;
+
     private FieldInfo outputValueField { get; set; }
     void Start()
     {
@@ -102,7 +105,7 @@ public class arduinoService : MonoBehaviour
         BP = Pins[2];
         Baud = this.ModSettings.baudRate;
         implementationEnabled = this.ModSettings.enableModuleImplementation;
-        minimumWait = this.ModSettings.processTime;
+        goAbove = this.ModSettings.goAboveProcessTime;
         return;
     }
 
@@ -117,6 +120,7 @@ public class arduinoService : MonoBehaviour
         }
         if (currentState == KMGameInfo.State.Gameplay) 
         {
+            if(arduinoConnection._connected) StartCoroutine(Test());
             bombState = 0;
             lastStrikes = 0;
             lastSolves = 0;
@@ -141,6 +145,18 @@ public class arduinoService : MonoBehaviour
             BombCommanders.Clear();
         }
         if (currentState == KMGameInfo.State.Quitting) { arduinoConnection.Disconnect(); }
+    }
+
+    private IEnumerator Test()
+    {
+        yield return null;
+        setPins();
+        yield return new WaitUntil(() => arduinoConnection._connected);
+        minimumWait = arduinoConnection.Calibrate(String.Format("{0} {1} {2} 0 0 0", RP, GP, BP), goAbove);
+        yield return new WaitForSeconds(3f);
+        Debug.LogFormat("[Arduino Manager Holdable Service] Pins are: {0}, {1}, {2}. Baud rate is {3}. Implementation enabled: {4}, output time: {5}", RP, GP, BP, Baud, implementationEnabled, minimumWait);
+        arduinoConnection.Stop();
+        yield break;
     }
 
     private IEnumerator getField()
@@ -484,7 +500,7 @@ public class arduinoService : MonoBehaviour
                     FieldInfo boolField = type.GetField("arduinoConnected", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
                     if (boolField != null) { doBreak = true; try { boolField.SetValue(component, arduinoConnection._connected && implementationEnabled); } catch { Debug.Log("[Arduino Manager] arduinoConnected field is not a bool."); } }
                     FieldInfo floatField = type.GetField("arduinoProcessTime", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
-                    if (floatField != null) { doBreak = true; try { floatField.SetValue(component, minimumWait); } catch { Debug.Log("[Arduino Manager] arduinoProcessTime field is not a float."); } }
+                    if (floatField != null) { doBreak = true; try { if(implementationEnabled) floatField.SetValue(component, minimumWait); } catch { Debug.Log("[Arduino Manager] arduinoProcessTime field is not a float."); } }
                     if (doBreak) { doBreak = false; break; }
                 }
             }

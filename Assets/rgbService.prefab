@@ -82,7 +82,7 @@ MonoBehaviour:
   m_Script: {fileID: -289456416, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Settings: "{\t\"redPin\":3,\t\"greenPin\":4,\t\"bluePin\":5,\t\"baudRate\":9600,\t\"enableModuleImplementation\":true,\t\"processTime\":1.1}"
+  Settings: "{\t\"redPin\":3,\t\"greenPin\":4,\t\"bluePin\":5,\t\"baudRate\":9600,\t\"enableModuleImplementation\":true,\t\"goAboveProcessTime\":true}"
   SettingsPath: arduinoRGBSettings.json
 --- !u!114 &114730106139275678
 MonoBehaviour:

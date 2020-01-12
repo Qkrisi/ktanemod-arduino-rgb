@@ -102,6 +102,7 @@ public class arduinoModHoldable : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         if (Service.arduinoConnection._connected)
         {
+            //StartCoroutine(Test());
             Frame.GetComponent<Renderer>().material = greenOBJ.GetComponent<Renderer>().material;
         }
         else
@@ -131,9 +132,10 @@ public class arduinoModHoldable : MonoBehaviour
     {
         yield return null;
         Service.setPins();
-        Service.arduinoConnection.sendMSG(String.Format("{0} {1} {2} 255 255 255", Service.RP, Service.GP, Service.BP));
+        yield return new WaitUntil(() => Service.arduinoConnection._connected);
+        Service.minimumWait = Service.arduinoConnection.Calibrate(String.Format("{0} {1} {2} 255 255 255", Service.RP, Service.GP, Service.BP), Service.goAbove);
         yield return new WaitForSeconds(3f);
-        Debug.LogFormat("[Arduino Manager Holdable] Pins are: {0}, {1}, {2}. Baud rate is {3}. Implementation enabled: {4}", Service.RP, Service.GP, Service.BP, Service.Baud, Service.implementationEnabled);
+        Debug.LogFormat("[Arduino Manager Holdable] Pins are: {0}, {1}, {2}. Baud rate is {3}. Implementation enabled: {4}, output time: {5}", Service.RP, Service.GP, Service.BP, Service.Baud, Service.implementationEnabled, Service.minimumWait);
         Service.arduinoConnection.Stop();
         yield break;
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Timers;
 using System.IO.Ports;
 
 namespace rgbMod
@@ -8,6 +9,8 @@ namespace rgbMod
         public bool _connected = false;
         private SerialPort port;
         private bool ableToSend = true;
+        private float time = 0f;
+        private Timer readTimer;
 
         public void Connect(string name, int baudRate)
         {
@@ -84,6 +87,46 @@ namespace rgbMod
                 }
             }
             return;
+        }
+
+        public float Calibrate(string msg, bool up)
+        {
+            int tried = 0;
+            time = up ? .1f : 0f;
+            string[] splitted = msg.Split(' ');
+            if (splitted.Length == 6)
+            {
+                if (_connected && isAbleToSend() && (int.TryParse(splitted[0], out tried) && int.TryParse(splitted[1], out tried) && int.TryParse(splitted[2], out tried) && int.TryParse(splitted[3], out tried) && int.TryParse(splitted[4], out tried) && int.TryParse(splitted[5], out tried))) //Checks if the arduino is connected and if every part of the message is an integer
+                {
+                    try
+                    {
+                        readTimer = new Timer(100);
+                        readTimer.Elapsed += OnTimerEvent;
+                        readTimer.AutoReset = true;
+                        readTimer.Enabled = false;
+                        port.WriteLine(msg);
+                        ableToSend = false;
+                        readTimer.Enabled = true;
+                        port.ReadLine();
+                        readTimer.Enabled = false;
+                        ableToSend = true;
+                        if (up) time += .1f;
+                        return time;
+
+                    }
+                    catch
+                    {
+                        ableToSend = true;
+                        _connected = false;
+                    }
+                }
+            }
+            return 1.1f;
+        }
+
+        private void OnTimerEvent(System.Object source, ElapsedEventArgs e)
+        {
+            time += .1f;
         }
 
         public bool isAbleToSend()
