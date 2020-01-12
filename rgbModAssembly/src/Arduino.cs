@@ -110,7 +110,6 @@ namespace rgbMod
                         port.ReadLine();
                         readTimer.Enabled = false;
                         ableToSend = true;
-                        if (up) time += .1f;
                         return time;
 
                     }
