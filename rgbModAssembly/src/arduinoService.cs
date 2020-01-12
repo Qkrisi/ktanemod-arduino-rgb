@@ -172,7 +172,7 @@ public class arduinoService : MonoBehaviour
             }
             else if(heldModule!=null && BombActive)
             {
-                Debug.LogFormat("Checking field... {0}", heldModule.ModuleName); 
+                //Debug.LogFormat("Checking field... {0}", heldModule.ModuleName); 
                 List<int> outputValue = new List<int>();
                 foreach (var component in heldModule.BombComponent.GetComponentsInChildren<Component>(true))
                 {
@@ -181,12 +181,15 @@ public class arduinoService : MonoBehaviour
                     try { outputValue = (List<int>)outputValueField.GetValue(component); break; } catch { outputValue = new List<int>() { 0, 0, 0 }; }
                 }
                 if (outputValue != null && outputValue.Count>=3) currentValues = outputValue;
-                if (currentValues != previousValues)
+                //Debug.LogFormat("Got values {0} {1} {2}", currentValues[0], currentValues[1], currentValues[2]);
+                if (currentValues[0] != previousValues[0] || currentValues[1] != previousValues[1] || currentValues[2] != previousValues[2])
                 { 
                     previousValues = currentValues;
+                    //Debug.LogFormat("New values found, sending {0} {1} {2}", currentValues[0], currentValues[1], currentValues[2]);
                     arduinoConnection.sendMSG(String.Format("{0} {1} {2} {3} {4} {5}", RP, GP, BP, currentValues[0], currentValues[1], currentValues[2]));
                     stop = true;
                 }
+                //else { Debug.Log("Not sending"); }
             }
             else if (heldModule == null && stop && currentState==KMGameInfo.State.Gameplay && arduinoConnection.isAbleToSend())
             {

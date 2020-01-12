@@ -6,6 +6,7 @@ using UnityEngine;
 public class arduinoModHoldable : MonoBehaviour
 {
 
+    [HideInInspector]
     public arduinoService Service;
 
     private KMSelectable mainHoldable;
