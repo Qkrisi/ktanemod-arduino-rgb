@@ -37,8 +37,8 @@ void loop(){
       _run=false;
       return; 
     }
-    redpin=arr[0];
-    greenpin=arr[1];
+    redpin=arr[1];
+    greenpin=arr[0];
     bluepin=arr[2];
     lastRValue=arr[3] % 256;
     lastGValue=arr[4] % 256;

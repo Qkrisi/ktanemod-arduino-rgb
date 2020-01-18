@@ -336,10 +336,10 @@ public class arduinoService : MonoBehaviour
                 yield return new WaitForSeconds(1.5f);
                 if (currentState == KMGameInfo.State.Gameplay && ableToDisplay) { arduinoConnection.Stop(); }
             }*/
-            if (!wait && currentBomb!=null && currentBomb.StrikeCount > strikeCounts[currentBomb] && currentBomb.CurrentTimer >= 60)
+            if (!wait && currentBomb!=null && currentBomb.StrikeCount > currentBomb.lastStrikes && currentBomb.CurrentTimer >= 60)
             {
                 yield return null;
-                strikeCounts[currentBomb] = currentBomb.StrikeCount;
+                currentBomb.lastStrikes = currentBomb.StrikeCount;
                 if (ableToDisplay) arduinoConnection.sendMSG(String.Format("{0} {1} {2} 255 0 0", RP, GP, BP));
                 yield return new WaitForSeconds(1.5f);
                 if (currentState == KMGameInfo.State.Gameplay && ableToDisplay) { arduinoConnection.Stop(); }
@@ -362,10 +362,10 @@ public class arduinoService : MonoBehaviour
                 yield return new WaitForSeconds(1.5f);
                 if (currentState == KMGameInfo.State.Gameplay && ableToDisplay) { arduinoConnection.Stop(); }
             }*/
-            if (!wait && currentBomb!=null && currentBomb.SolveCount > solveCounts[currentBomb] && currentBomb.SolveCount < currentBomb.SolvableCount)
+            if (!wait && currentBomb!=null && currentBomb.SolveCount > currentBomb.lastSolves && currentBomb.SolveCount < currentBomb.SolvableCount)
             {
                 yield return null;
-                solveCounts[currentBomb] = currentBomb.SolveCount;
+                currentBomb.lastSolves = currentBomb.SolveCount;
                 if (ableToDisplay) arduinoConnection.sendMSG(String.Format("{0} {1} {2} 0 255 0", RP, GP, BP));
                 yield return new WaitForSeconds(1.5f);
                 if (currentState == KMGameInfo.State.Gameplay && ableToDisplay) { arduinoConnection.Stop(); }

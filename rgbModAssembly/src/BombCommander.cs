@@ -36,7 +36,9 @@ namespace rgbMod
                 HandleStrikeChanges();
             }
         }
+        public int lastStrikes = 0;
         public int SolveCount => Bomb.GetSolvedComponentCount();
+        public int lastSolves = 0;
         public int SolvableCount => Bomb.GetSolvableComponentCount();
         public float CurrentTimerElapsed => TimerComponent.TimeElapsed;
         public readonly int Id;
