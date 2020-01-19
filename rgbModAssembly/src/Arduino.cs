@@ -76,7 +76,7 @@ namespace rgbMod
                 {
                     try
                     {
-                        port.WriteLine(msg);
+                        port.WriteLine(msg+"\r\n");
                         ableToSend = false;
                     }
                     catch
@@ -104,7 +104,7 @@ namespace rgbMod
                         readTimer.Elapsed += OnTimerEvent;
                         readTimer.AutoReset = true;
                         readTimer.Enabled = false;
-                        port.WriteLine(msg);
+                        port.WriteLine(msg+"\r\n");
                         ableToSend = false;
                         readTimer.Enabled = true;
                         port.ReadLine();
