@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Timers;
+//using System.Timers;
 using System.IO.Ports;
 
 namespace rgbMod
@@ -9,8 +9,8 @@ namespace rgbMod
         public bool _connected = false;
         private SerialPort port;
         private bool ableToSend = true;
-        private float time = 0f;
-        private Timer readTimer;
+        /*private float time = 0f;
+        private Timer readTimer;*/
 
         public void Connect(string name, int baudRate)
         {
@@ -89,7 +89,7 @@ namespace rgbMod
             return;
         }
 
-        public float Calibrate(string msg, bool up)
+        /*public float Calibrate(string msg, bool up)
         {
             int tried = 0;
             time = up ? .1f : 0f;
@@ -126,7 +126,7 @@ namespace rgbMod
         private void OnTimerEvent(System.Object source, ElapsedEventArgs e)
         {
             time += .1f;
-        }
+        }*/
 
         public bool isAbleToSend()
         {

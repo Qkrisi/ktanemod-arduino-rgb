@@ -8,6 +8,7 @@ bool _run = false;
 
 void setup(){
     Serial.begin(9600);
+    Serial.setTimeout(50);
 }
 
 void loop(){

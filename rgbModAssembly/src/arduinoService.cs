@@ -83,7 +83,9 @@ public class arduinoService : MonoBehaviour
     [HideInInspector]
     public bool goAbove = true;
 
+
     private FieldInfo outputValueField { get; set; }
+        
     void Start()
     {
         gameInfo = this.GetComponent<KMGameInfo>();
@@ -120,7 +122,7 @@ public class arduinoService : MonoBehaviour
         }
         if (currentState == KMGameInfo.State.Gameplay) 
         {
-            if(arduinoConnection._connected) StartCoroutine(Test());
+            //if(arduinoConnection._connected) StartCoroutine(Test());
             bombState = 0;
             lastStrikes = 0;
             lastSolves = 0;
@@ -147,7 +149,7 @@ public class arduinoService : MonoBehaviour
         if (currentState == KMGameInfo.State.Quitting) { arduinoConnection.Disconnect(); }
     }
 
-    private IEnumerator Test()
+    /*private IEnumerator Test()
     {
         yield return null;
         setPins();
@@ -157,7 +159,7 @@ public class arduinoService : MonoBehaviour
         Debug.LogFormat("[Arduino Manager Holdable Service] Pins are: {0}, {1}, {2}. Baud rate is {3}. Implementation enabled: {4}, output time: {5}", RP, GP, BP, Baud, implementationEnabled, minimumWait);
         arduinoConnection.Stop();
         yield break;
-    }
+    }*/
 
     private IEnumerator getField()
     {
@@ -499,8 +501,8 @@ public class arduinoService : MonoBehaviour
                     var type = component.GetType();
                     FieldInfo boolField = type.GetField("arduinoConnected", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
                     if (boolField != null) { doBreak = true; try { boolField.SetValue(component, arduinoConnection._connected && implementationEnabled); } catch { Debug.Log("[Arduino Manager] arduinoConnected field is not a bool."); } }
-                    FieldInfo floatField = type.GetField("arduinoProcessTime", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
-                    if (floatField != null) { doBreak = true; try { if(implementationEnabled) floatField.SetValue(component, minimumWait); } catch { Debug.Log("[Arduino Manager] arduinoProcessTime field is not a float."); } }
+                    /*FieldInfo floatField = type.GetField("arduinoProcessTime", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                    if (floatField != null) { doBreak = true; try { if(implementationEnabled) floatField.SetValue(component, minimumWait); } catch { Debug.Log("[Arduino Manager] arduinoProcessTime field is not a float."); } }*/
                     if (doBreak) { doBreak = false; break; }
                 }
             }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 public class arduinoModHoldable : MonoBehaviour
@@ -25,6 +26,18 @@ public class arduinoModHoldable : MonoBehaviour
     private GameObject greenOBJ;
     private GameObject yellowOBJ;
 
+    GameObject modSelectorObject;
+    IDictionary<string, object> modSelectorAPI;
+    bool isEnabled { get => modSelectorObject == null ? true : !getEnumerable().ToList().Contains("rgbModService"); }
+
+    private IEnumerable<string> getEnumerable()
+    {
+        return (IEnumerable<string>)modSelectorAPI["DisabledServices"];
+    }
+
+    private int ID;
+    static int Counter;
+
     private Material defaultMat;
 
     void Start()
@@ -35,13 +48,16 @@ public class arduinoModHoldable : MonoBehaviour
     private IEnumerator Setup()
     {
         yield return new WaitForSeconds(0.1f);
+        ID = Counter++;
+        modSelectorObject = GameObject.Find("ModSelector_Info");
+        if(modSelectorObject!=null) modSelectorAPI = modSelectorObject.GetComponent<IDictionary<string, object>>();
         while (true)
         {
             yield return null;
             arduinoService[] Services = FindObjectsOfType<arduinoService>();
-            if (Services.Length > 0) { Service = Services[0]; }
+            if (Services.Length > 0) { Service = Services[ID]; }
             else { Service = null; }
-            if (Service != null)
+            if (Service != null && isEnabled)
             {
                 mainHoldable = this.GetComponent<KMSelectable>();
                 defaultChildren = mainHoldable.Children;
@@ -84,7 +100,7 @@ public class arduinoModHoldable : MonoBehaviour
 
     private bool ConnectBTNAction(string portName)
     {
-        if (Service != null) { StartCoroutine(attemptConnection(portName)); }
+        if (Service != null && isEnabled) { StartCoroutine(attemptConnection(portName)); }
         return false;
     }
 
@@ -114,7 +130,7 @@ public class arduinoModHoldable : MonoBehaviour
 
     private bool disconnectBTNAction()
     {
-        if (Service != null)
+        if (Service != null && isEnabled)
         {
             Service.arduinoConnection.Disconnect();
             Frame.GetComponent<Renderer>().material = defaultMat;
@@ -124,7 +140,7 @@ public class arduinoModHoldable : MonoBehaviour
 
     private bool testBTNAction()
     {
-        if (Service != null) { StartCoroutine(Test()); }
+        if (Service != null && isEnabled) { StartCoroutine(Test()); }
         return false;
     }
 
@@ -133,7 +149,7 @@ public class arduinoModHoldable : MonoBehaviour
         yield return null;
         Service.setPins();
         yield return new WaitUntil(() => Service.arduinoConnection._connected);
-        Service.minimumWait = Service.arduinoConnection.Calibrate(String.Format("{0} {1} {2} 255 255 255", Service.RP, Service.GP, Service.BP), Service.goAbove);
+        //Service.minimumWait = Service.arduinoConnection.Calibrate(String.Format("{0} {1} {2} 255 255 255", Service.RP, Service.GP, Service.BP), Service.goAbove);
         yield return new WaitForSeconds(3f);
         Debug.LogFormat("[Arduino Manager Holdable] Pins are: {0}, {1}, {2}. Baud rate is {3}. Implementation enabled: {4}, output time: {5}", Service.RP, Service.GP, Service.BP, Service.Baud, Service.implementationEnabled, Service.minimumWait);
         Service.arduinoConnection.Stop();
@@ -142,7 +158,7 @@ public class arduinoModHoldable : MonoBehaviour
 
     private bool refreshBTNAction()
     {
-        if (Service != null) { StartCoroutine(Refresh()); }
+        if (Service != null && isEnabled) { StartCoroutine(Refresh()); }
         return false;
     }
 
