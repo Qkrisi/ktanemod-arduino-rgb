@@ -512,7 +512,7 @@ public class arduinoService : MonoBehaviour
                     object ReflectorOBJ = Reflectors[module.BombComponent];
                     Type ReflectorType = ReflectorOBJ.GetType();
                     MethodInfo ReflectedMethod = ReflectorType.GetMethod("Update", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
-                    ReflectedMethod.Invoke(ReflectorOBJ, new object[] { });
+                    if(ReflectedMethod!=null) ReflectedMethod.Invoke(ReflectorOBJ, new object[] { });
                     continue;
                 }
                 if (Reflector.moduleReflectors.ContainsKey(module.ModuleName))
