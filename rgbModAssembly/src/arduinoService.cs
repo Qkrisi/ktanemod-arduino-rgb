@@ -83,6 +83,7 @@ public class arduinoService : MonoBehaviour
     [HideInInspector]
     public bool goAbove = true;
 
+    private Dictionary<BombComponent, object> Reflectors = new Dictionary<BombComponent, object>();
 
     private FieldInfo outputValueField { get; set; }
         
@@ -115,6 +116,7 @@ public class arduinoService : MonoBehaviour
     { 
         currentState = state;
         setPins();
+
         if (currentState != KMGameInfo.State.PostGame) { arduinoConnection.Stop(); }
         else
         {
@@ -191,15 +193,25 @@ public class arduinoService : MonoBehaviour
             else if(heldModule!=null && BombActive)
             {
                 //Debug.LogFormat("Checking field... {0}", heldModule.ModuleName); 
-                List<int> outputValue = new List<int>();
-                foreach (var component in heldModule.BombComponent.GetComponentsInChildren<Component>(true))
+                if (Reflectors.ContainsKey(heldModule.BombComponent))
                 {
-                    var type = component.GetType();
-                    outputValueField = type.GetField("arduinoRGBValues", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
-                    try { outputValue = (List<int>)outputValueField.GetValue(component); break; } catch { outputValue = new List<int>() { 0, 0, 0 }; }
+                    object ReflectorOBJ = Reflectors[heldModule.BombComponent];
+                    Type ReflectorType = ReflectorOBJ.GetType();
+                    FieldInfo ReflectedField = ReflectorType.GetField("arduinoRGBValues", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                    currentValues = (List<int>)ReflectedField.GetValue(ReflectorOBJ);
                 }
-                if (outputValue != null && outputValue.Count>=3) currentValues = outputValue;
-                //Debug.LogFormat("Got values {0} {1} {2}", currentValues[0], currentValues[1], currentValues[2]);
+                else
+                {
+                    List<int> outputValue = new List<int>();
+                    foreach (var component in heldModule.BombComponent.GetComponentsInChildren<Component>(true))
+                    {
+                        var type = component.GetType();
+                        outputValueField = type.GetField("arduinoRGBValues", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                        try { outputValue = (List<int>)outputValueField.GetValue(component); break; } catch { outputValue = new List<int>() { 0, 0, 0 }; }
+                    }
+                    if (outputValue != null && outputValue.Count >= 3) currentValues = outputValue;
+                    //Debug.LogFormat("Got values {0} {1} {2}", currentValues[0], currentValues[1], currentValues[2]);
+                }
                 if (currentValues[0] != previousValues[0] || currentValues[1] != previousValues[1] || currentValues[2] != previousValues[2])
                 { 
                     previousValues = currentValues;
@@ -495,6 +507,19 @@ public class arduinoService : MonoBehaviour
 			{
 				module.Update();
                 setPins();
+                if (Reflectors.ContainsKey(module.BombComponent))
+                {
+                    object ReflectorOBJ = Reflectors[module.BombComponent];
+                    Type ReflectorType = ReflectorOBJ.GetType();
+                    MethodInfo ReflectedMethod = ReflectorType.GetMethod("Update", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                    ReflectedMethod.Invoke(ReflectorOBJ, new object[] { });
+                    continue;
+                }
+                if (Reflector.moduleReflectors.ContainsKey(module.ModuleName))
+                {
+                    Reflectors.Add(module.BombComponent, Activator.CreateInstance(Reflector.moduleReflectors[module.ModuleName].GetType(), new object[] { module.BombComponent.gameObject }));
+                    continue;
+                }
                 foreach (var component in module.BombComponent.GetComponentsInChildren<Component>(true))
                 {
                     bool doBreak = false;

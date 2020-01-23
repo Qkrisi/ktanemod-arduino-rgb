@@ -28,7 +28,7 @@ public class arduinoModHoldable : MonoBehaviour
 
     GameObject modSelectorObject;
     IDictionary<string, object> modSelectorAPI;
-    bool isEnabled { get => modSelectorObject == null ? true : !getEnumerable().ToList().Contains("rgbModService"); }
+    bool isEnabled { get => modSelectorObject == null ? true : !getEnumerable().ToList().Contains("rgbService(Clone)"); }
 
     private IEnumerable<string> getEnumerable()
     {
@@ -55,7 +55,7 @@ public class arduinoModHoldable : MonoBehaviour
         {
             yield return null;
             arduinoService[] Services = FindObjectsOfType<arduinoService>();
-            if (Services.Length > 0) { Service = Services[ID]; }
+            if (Services.Length > 0) { Service = Services[0]; }
             else { Service = null; }
             if (Service != null && isEnabled)
             {

@@ -110,12 +110,17 @@
     <Compile Include="src\Module.cs" />
     <Compile Include="src\BombCommander.cs" />
     <Compile Include="src\ConvertedTypes.cs" />
+    <Compile Include="src\Reflectors\Reflector.cs" />
+    <Compile Include="src\Reflectors\Modules\RedArrows.cs" />
+    <Compile Include="src\Reflectors\Modules\Vectors.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="rgbModAssembly.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
+    <Folder Include="src\Reflectors\" />
+    <Folder Include="src\Reflectors\Modules\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
