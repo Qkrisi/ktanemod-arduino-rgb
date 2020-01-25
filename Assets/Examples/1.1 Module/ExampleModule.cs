@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class ExampleModule : MonoBehaviour
 {
@@ -6,6 +7,8 @@ public class ExampleModule : MonoBehaviour
 
     int correctIndex;
     bool isActivated = false;
+
+    public List<int> arduinoRGBValues = new List<int>() {255,0,0};
 
     void Start()
     {

@@ -114,6 +114,7 @@ GameObject:
   - component: {fileID: 65833547887403002}
   - component: {fileID: 54131439424247218}
   - component: {fileID: 114054450481391484}
+  - component: {fileID: 114963602691610014}
   m_Layer: 0
   m_Name: arduinoHoldable
   m_TagString: Untagged
@@ -1541,3 +1542,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShaderNames:
   - GUI/KT 3D Text
+--- !u!114 &114963602691610014
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1554262345658114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -271661043, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

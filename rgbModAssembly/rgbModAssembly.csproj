@@ -113,6 +113,8 @@
     <Compile Include="src\Reflectors\Reflector.cs" />
     <Compile Include="src\Reflectors\Modules\RedArrows.cs" />
     <Compile Include="src\Reflectors\Modules\Vectors.cs" />
+    <Compile Include="src\Reflectors\Modules\MorseCode.cs" />
+    <Compile Include="src\Reflectors\Modules\SimonSays.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="rgbModAssembly.ruleset" />

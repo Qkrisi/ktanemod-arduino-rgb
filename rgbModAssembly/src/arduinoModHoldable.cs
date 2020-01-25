@@ -49,13 +49,14 @@ public class arduinoModHoldable : MonoBehaviour
     {
         yield return new WaitForSeconds(0.1f);
         ID = Counter++;
+        this.GetComponent<KMGameInfo>().OnStateChange += OnStateChange;
         modSelectorObject = GameObject.Find("ModSelector_Info");
         if(modSelectorObject!=null) modSelectorAPI = modSelectorObject.GetComponent<IDictionary<string, object>>();
         while (true)
         {
             yield return null;
             arduinoService[] Services = FindObjectsOfType<arduinoService>();
-            if (Services.Length > 0) { Service = Services[0]; }
+            if (Services.Length > 0) { Service = Services[ID]; }
             else { Service = null; }
             if (Service != null && isEnabled)
             {
@@ -82,6 +83,11 @@ public class arduinoModHoldable : MonoBehaviour
                 yield break;
             }
         }
+    }
+
+    private void OnStateChange(KMGameInfo.State state)
+    {
+        Counter = 0;
     }
 
     /*private IEnumerator getName()
@@ -207,7 +213,6 @@ public class arduinoModHoldable : MonoBehaviour
             item.GetComponent<Renderer>().enabled = true;
             childrenBTNs.Add(item.GetComponent<KMSelectable>());
         }
-        Debug.Log("Got there!");
         while (mainHoldable.Children.Length < childrenBTNs.Count)
         {
             yield return null;

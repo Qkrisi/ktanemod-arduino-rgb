@@ -116,7 +116,6 @@ public class arduinoService : MonoBehaviour
     { 
         currentState = state;
         setPins();
-
         if (currentState != KMGameInfo.State.PostGame) { arduinoConnection.Stop(); }
         else
         {
@@ -517,7 +516,7 @@ public class arduinoService : MonoBehaviour
                 }
                 if (Reflector.moduleReflectors.ContainsKey(module.ModuleName))
                 {
-                    Reflectors.Add(module.BombComponent, Activator.CreateInstance(Reflector.moduleReflectors[module.ModuleName].GetType(), new object[] { module.BombComponent.gameObject }));
+                    Reflectors.Add(module.BombComponent, Activator.CreateInstance(Reflector.moduleReflectors[module.ModuleName], new object[] { module.BombComponent.gameObject }));
                     continue;
                 }
                 foreach (var component in module.BombComponent.GetComponentsInChildren<Component>(true))

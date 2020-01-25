@@ -8,9 +8,9 @@ public class Vectors
     public List<int> arduinoRGBValues = new List<int>() { 0, 0, 0 };
     private Text displayText;
 
-    public Vectors(GameObject module)
+    public Vectors(GameObject Module)
     {
-        if(module!=null) displayText = module.transform.Find("displays").Find("Canvas (1)").Find("disp").GetComponent<Text>();
+        displayText = Module.transform.Find("displays").Find("Canvas (1)").Find("disp").GetComponent<Text>();
     }
 
     public void Update()
