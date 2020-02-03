@@ -1670,7 +1670,6 @@ public class TestHarness : MonoBehaviour
 
     private IEnumerator ArduinoController()
     {
-        //104 97 91
         Camera.main.clearFlags = CameraClearFlags.SolidColor;
         Camera.main.backgroundColor = Color.Lerp(new Color32(104,97,91, 255), Camera.main.backgroundColor, 0);
         while(true)
@@ -1679,7 +1678,6 @@ public class TestHarness : MonoBehaviour
             {
                 if(currentModule!=null)
                 {
-                    //Debug.LogFormat("{0}", currentModule.GetComponentsInChildren<Component>(true).Length);
                     List<int> outputValue = new List<int>() { 104, 97, 91 };;
                     foreach (var component in currentModule.GetComponentsInChildren<Component>(true))
                     {
@@ -1699,4 +1697,3 @@ public class TestHarness : MonoBehaviour
         }
     }
 }
-

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using GameObject = UnityEngine.GameObject;
+using UnityEngine;
 
 public class RedArrows
 {
@@ -10,4 +10,3 @@ public class RedArrows
         arduinoRGBValues = new List<int>() { 255, 0, 0 };
     }
 }
-

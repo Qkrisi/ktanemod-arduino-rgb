@@ -18,7 +18,7 @@ public class arduinoService : MonoBehaviour
         public int bluePin = 5;
         public int baudRate = 9600;
         public bool enableModuleImplementation = true;
-        public bool goAboveProcessTime = true;
+        public bool enableTestingMode = false;
     }
 
     public Settings ModSettings;
@@ -80,8 +80,17 @@ public class arduinoService : MonoBehaviour
     private bool wait = false;
     private bool stop = false;
 
+    /// <summary>
+    /// Testing means the frame of the holdable changes its color too.
+    /// </summary>
     [HideInInspector]
-    public bool goAbove = true;
+    public bool testing = true;
+
+    [HideInInspector]
+    public GameObject Frame;
+
+    [HideInInspector]
+    public Material customMat;
 
     private Dictionary<BombComponent, object> Reflectors = new Dictionary<BombComponent, object>();
 
@@ -108,7 +117,7 @@ public class arduinoService : MonoBehaviour
         BP = Pins[2];
         Baud = this.ModSettings.baudRate;
         implementationEnabled = this.ModSettings.enableModuleImplementation;
-        goAbove = this.ModSettings.goAboveProcessTime;
+        testing = this.ModSettings.enableTestingMode;
         return;
     }
 
@@ -215,7 +224,8 @@ public class arduinoService : MonoBehaviour
                 { 
                     previousValues = currentValues;
                     //Debug.LogFormat("New values found, sending {0} {1} {2}", currentValues[0], currentValues[1], currentValues[2]);
-                    arduinoConnection.sendMSG(String.Format("{0} {1} {2} {3} {4} {5}", RP, GP, BP, currentValues[0], currentValues[1], currentValues[2]));
+                    arduinoConnection.sendMSG(String.Format("{0} {1} {2} {3} {4} {5}", RP, GP, BP, currentValues[0]%256, currentValues[1]%256, currentValues[2]%256));
+                    setFrameColor(currentValues);
                     stop = true;
                 }
                 //else { Debug.Log("Not sending"); }
@@ -233,6 +243,13 @@ public class arduinoService : MonoBehaviour
         yield break;
     }
 
+    private void setFrameColor(List<int> Colors)
+    {
+        if (!testing) return;
+        customMat.color=Color.Lerp(new Color32((byte)(Colors[0]%256), (byte)(Colors[1] % 256), (byte)(Colors[2] % 256), 255), customMat.color, 0);
+        Frame.GetComponent<Renderer>().material = customMat;
+    }
+
     /*
     private Component getComponent(Module module)
     {
@@ -244,7 +261,7 @@ public class arduinoService : MonoBehaviour
             if (outputValueField != null) { outputcomponent = component; break; }
         }
         return outputcomponent;
-    }*/   
+    }*/
 
     /*private IEnumerator checkBombState()
     {
@@ -511,7 +528,7 @@ public class arduinoService : MonoBehaviour
                     object ReflectorOBJ = Reflectors[module.BombComponent];
                     Type ReflectorType = ReflectorOBJ.GetType();
                     MethodInfo ReflectedMethod = ReflectorType.GetMethod("Update", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
-                    if(ReflectedMethod!=null) ReflectedMethod.Invoke(ReflectorOBJ, new object[] { });
+                    if(ReflectedMethod!=null && !module.IsSolved) ReflectedMethod.Invoke(ReflectorOBJ, new object[] { });
                     continue;
                 }
                 if (Reflector.moduleReflectors.ContainsKey(module.ModuleName))
@@ -548,7 +565,6 @@ public class arduinoService : MonoBehaviour
         yield break;
     }
 
-    #region Factory Implementation
     private IEnumerator FactoryCheck()
     {
         yield return new WaitUntil(() => SceneManager.Instance.GameplayState.Bombs != null && SceneManager.Instance.GameplayState.Bombs.Count > 0);
@@ -615,7 +631,6 @@ public class arduinoService : MonoBehaviour
             StartCoroutine(CheckForBomb(false));
         }
     }
-    //factory specific types
 
     private static Type _factoryType = null;
     private static Type _factoryBombType = null;
@@ -630,5 +645,4 @@ public class arduinoService : MonoBehaviour
 
     private object _factory = null;
     private object _gameroom = null;
-    #endregion
 }

@@ -111,10 +111,17 @@
     <Compile Include="src\BombCommander.cs" />
     <Compile Include="src\ConvertedTypes.cs" />
     <Compile Include="src\Reflectors\Reflector.cs" />
-    <Compile Include="src\Reflectors\Modules\RedArrows.cs" />
-    <Compile Include="src\Reflectors\Modules\Vectors.cs" />
     <Compile Include="src\Reflectors\Modules\MorseCode.cs" />
     <Compile Include="src\Reflectors\Modules\SimonSays.cs" />
+    <Compile Include="src\Reflectors\Modules\PartialDerivatives.cs" />
+    <Compile Include="src\Reflectors\Modules\eXish\Arrows\RedArrows.cs" />
+    <Compile Include="src\Reflectors\Modules\eXish\Vectors.cs" />
+    <Compile Include="src\Reflectors\Modules\eXish\Egg.cs" />
+    <Compile Include="src\Reflectors\Modules\eXish\Arrows\GreenArrows.cs" />
+    <Compile Include="src\Reflectors\Modules\eXish\Arrows\YellowArrows.cs" />
+    <Compile Include="src\Reflectors\Modules\eXish\Arrows\BlueArrows.cs" />
+    <Compile Include="src\Reflectors\Modules\eXish\Arrows\OrangeArrows.cs" />
+    <Compile Include="src\Reflectors\Modules\eXish\Arrows\PurpleArrows.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="rgbModAssembly.ruleset" />
@@ -123,6 +130,8 @@
     <Folder Include="src\" />
     <Folder Include="src\Reflectors\" />
     <Folder Include="src\Reflectors\Modules\" />
+    <Folder Include="src\Reflectors\Modules\eXish\" />
+    <Folder Include="src\Reflectors\Modules\eXish\Arrows\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -4,5 +4,5 @@
 	"bluePin":5,
 	"baudRate":9600,
 	"enableModuleImplementation":true,
-	"goAboveProcessTime":true
+	"enableTestingMode":true
 }

@@ -26,14 +26,11 @@ public class arduinoModHoldable : MonoBehaviour
     private GameObject greenOBJ;
     private GameObject yellowOBJ;
 
+    private GameObject Blocker;
+
     GameObject modSelectorObject;
     IDictionary<string, object> modSelectorAPI;
-    bool isEnabled { get => modSelectorObject == null ? true : !getEnumerable().ToList().Contains("rgbService(Clone)"); }
-
-    private IEnumerable<string> getEnumerable()
-    {
-        return (IEnumerable<string>)modSelectorAPI["DisabledServices"];
-    }
+    bool isEnabled { get => modSelectorObject == null ? true : !((IEnumerable<string>)modSelectorAPI["DisabledServices"]).Contains("rgbService(Clone)"); }
 
     private int ID;
     static int Counter;
@@ -52,42 +49,64 @@ public class arduinoModHoldable : MonoBehaviour
         this.GetComponent<KMGameInfo>().OnStateChange += OnStateChange;
         modSelectorObject = GameObject.Find("ModSelector_Info");
         if(modSelectorObject!=null) modSelectorAPI = modSelectorObject.GetComponent<IDictionary<string, object>>();
-        while (true)
+        Blocker = transform.Find("Blocker").gameObject;
+        if(!isEnabled)
         {
-            yield return null;
-            arduinoService[] Services = FindObjectsOfType<arduinoService>();
-            if (Services.Length > 0) { Service = Services[ID]; }
-            else { Service = null; }
-            if (Service != null && isEnabled)
+            Blocker.SetActive(true);
+            yield return new WaitUntil(() => isEnabled);
+        }
+        yield return null;
+        arduinoService[] Services = FindObjectsOfType<arduinoService>();
+        if (Services.Length > 0) { Service = Services[ID]; }
+        else { Service = null; }
+        if (Service != null && isEnabled)
+        {
+            Blocker.SetActive(false);
+            StartCoroutine(Block());
+            mainHoldable = this.GetComponent<KMSelectable>();
+            defaultChildren = mainHoldable.Children;
+            DisconnectButton = mainHoldable.Children[0];
+            RefreshButton = mainHoldable.Children[1];
+            TestButton = mainHoldable.Children[2];
+            Button = mainHoldable.Children[3].gameObject;
+            Frame = mainHoldable.gameObject.transform.Find("arduinoHoldableBacking").gameObject;
+            redOBJ = mainHoldable.gameObject.transform.Find("arduinoHoldableRedOBJ").gameObject;
+            greenOBJ = mainHoldable.gameObject.transform.Find("arduinoHoldableGreenOBJ").gameObject;
+            yellowOBJ = mainHoldable.gameObject.transform.Find("arduinoHoldableYellowOBJ").gameObject;
+            defaultMat = Frame.GetComponent<Renderer>().material;
+            DisconnectButton.OnInteract += disconnectBTNAction;
+            RefreshButton.OnInteract += refreshBTNAction;
+            TestButton.OnInteract += testBTNAction;
+            if (Service.arduinoConnection._connected)
             {
-                mainHoldable = this.GetComponent<KMSelectable>();
-                defaultChildren = mainHoldable.Children;
-                DisconnectButton = mainHoldable.Children[0];
-                RefreshButton = mainHoldable.Children[1];
-                TestButton = mainHoldable.Children[2];
-                Button = mainHoldable.Children[3].gameObject;
-                Frame = mainHoldable.gameObject.transform.Find("arduinoHoldableBacking").gameObject;
-                redOBJ = mainHoldable.gameObject.transform.Find("arduinoHoldableRedOBJ").gameObject;
-                greenOBJ = mainHoldable.gameObject.transform.Find("arduinoHoldableGreenOBJ").gameObject;
-                yellowOBJ = mainHoldable.gameObject.transform.Find("arduinoHoldableYellowOBJ").gameObject;
-                defaultMat = Frame.GetComponent<Renderer>().material;
-                DisconnectButton.OnInteract += disconnectBTNAction;
-                RefreshButton.OnInteract += refreshBTNAction;
-                TestButton.OnInteract += testBTNAction;
-                if (Service.arduinoConnection._connected)
-                {
-                    Frame.GetComponent<Renderer>().material = greenOBJ.GetComponent<Renderer>().material;
-                }
-                StartCoroutine(Refresh());
-                //StartCoroutine(getName());
-                yield break;
+                Frame.GetComponent<Renderer>().material = greenOBJ.GetComponent<Renderer>().material;
             }
+            Service.Frame = Frame;
+            Service.customMat = transform.Find("arduinoHoldableCustomOBJ").GetComponent<Renderer>().material;
+            StartCoroutine(Refresh());
+            yield break;
         }
     }
 
     private void OnStateChange(KMGameInfo.State state)
     {
         Counter = 0;
+    }
+
+    private IEnumerator Block()
+    {
+        while (true)
+        {
+            yield return null;
+            if(!isEnabled)
+            {
+                Blocker.SetActive(true);
+            }
+            else
+            {
+                Blocker.SetActive(false);
+            }
+        }
     }
 
     /*private IEnumerator getName()
