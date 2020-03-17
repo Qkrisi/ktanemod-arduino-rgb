@@ -16,7 +16,6 @@ public class Vectors
     public void Update()
     {
         string text = displayText.text.ToUpperInvariant().Replace("VECTOR 1 (", "").Replace("VECTOR 2 (", "").Replace("VECTOR 3 (", "");
-        Debug.Log(text);
         if (text.StartsWith("RED", StringComparison.InvariantCultureIgnoreCase)) arduinoRGBValues = new List<int>() { 255, 0, 0 };
         else if (text.StartsWith("ORANGE", StringComparison.InvariantCultureIgnoreCase)) arduinoRGBValues = new List<int>() { 184, 165, 0 };
         else if (text.StartsWith("YELLOW", StringComparison.InvariantCultureIgnoreCase)) arduinoRGBValues = new List<int>() { 255, 255, 0 };
