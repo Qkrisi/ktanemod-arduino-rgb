@@ -112,8 +112,8 @@ GameObject:
   - component: {fileID: 114133375675349434}
   - component: {fileID: 65833547887403002}
   - component: {fileID: 54131439424247218}
-  - component: {fileID: 114054450481391484}
   - component: {fileID: 114963602691610014}
+  - component: {fileID: 114465162843217468}
   m_Layer: 0
   m_Name: arduinoHoldable
   m_TagString: Untagged
@@ -1313,18 +1313,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HighlightScale: {x: 1, y: 1, z: 1}
   OutlineAmount: 0
---- !u!114 &114054450481391484
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1554262345658114}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1277097717, guid: 1f8bd1e1353a04e47a6be1126fefd6ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Service: {fileID: 0}
 --- !u!114 &114070273693008468
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1464,6 +1452,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShaderNames:
   - KT/Mobile/DiffuseTint
+--- !u!114 &114465162843217468
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1554262345658114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1277097717, guid: 1f8bd1e1353a04e47a6be1126fefd6ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Service: {fileID: 0}
 --- !u!114 &114500353149559290
 MonoBehaviour:
   m_ObjectHideFlags: 1

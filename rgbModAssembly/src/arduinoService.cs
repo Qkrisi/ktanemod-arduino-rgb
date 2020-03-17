@@ -145,6 +145,7 @@ public class arduinoService : MonoBehaviour
             StartCoroutine(CheckForBomb(true));
             StartCoroutine(FactoryCheck());
             StartCoroutine(getBomb());
+            StartCoroutine(HandleReflectors());
         }
         else {
             currentModuleName = "";
@@ -152,6 +153,7 @@ public class arduinoService : MonoBehaviour
             StopCoroutine(CheckForBomb(false));
             StopCoroutine(FactoryCheck());
             StopCoroutine(WaitUntilEndFactory());
+            StopCoroutine(HandleReflectors());
             BombActive = false;
             Bombs.Clear();
             BombCommanders.Clear();
@@ -523,14 +525,7 @@ public class arduinoService : MonoBehaviour
 			{
 				module.Update();
                 setPins();
-                if (Reflectors.ContainsKey(module.BombComponent))
-                {
-                    object ReflectorOBJ = Reflectors[module.BombComponent];
-                    Type ReflectorType = ReflectorOBJ.GetType();
-                    MethodInfo ReflectedMethod = ReflectorType.GetMethod("Update", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
-                    if(ReflectedMethod!=null && !module.IsSolved) ReflectedMethod.Invoke(ReflectorOBJ, new object[] { });
-                    continue;
-                }
+                if (Reflectors.ContainsKey(module.BombComponent)) continue;
                 if (Reflector.moduleReflectors.ContainsKey(module.ModuleName))
                 {
                     Reflectors.Add(module.BombComponent, Activator.CreateInstance(Reflector.moduleReflectors[module.ModuleName], new object[] { module.BombComponent.gameObject }));
@@ -546,6 +541,22 @@ public class arduinoService : MonoBehaviour
                     if (floatField != null) { doBreak = true; try { if(implementationEnabled) floatField.SetValue(component, minimumWait); } catch { Debug.Log("[Arduino Manager] arduinoProcessTime field is not a float."); } }*/
                     if (doBreak) { doBreak = false; break; }
                 }
+            }
+        }
+    }
+
+    private IEnumerator HandleReflectors()
+    {
+        while (true)
+        {
+            yield return null;
+            if (!BombActive) continue;
+            foreach (KeyValuePair<BombComponent, object> Pair in Reflectors)
+            {
+                yield return null;
+                Type ReflectorType = Pair.Value.GetType();
+                MethodInfo ReflectedMethod = ReflectorType.GetMethod("Update", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                if (ReflectedMethod != null && !Pair.Key.IsSolved) ReflectedMethod.Invoke(Pair.Value, new object[] { });
             }
         }
     }

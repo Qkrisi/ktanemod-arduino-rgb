@@ -22,8 +22,8 @@ GameObject:
   - component: {fileID: 114730106139275678}
   - component: {fileID: 114494902951061564}
   - component: {fileID: 114867607096250528}
-  - component: {fileID: 114494595297072374}
   - component: {fileID: 114261465437611412}
+  - component: {fileID: 114731441305299216}
   m_Layer: 0
   m_Name: rgbService
   m_TagString: Untagged
@@ -55,22 +55,6 @@ MonoBehaviour:
   m_Script: {fileID: 2144496390, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114494595297072374
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1554534635561090}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -621427725, guid: 1f8bd1e1353a04e47a6be1126fefd6ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RP: 3
-  GP: 4
-  BP: 5
-  Baud: 0
-  implementationEnabled: 0
 --- !u!114 &114494902951061564
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -93,6 +77,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1453678656, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114731441305299216
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1554534635561090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -621427725, guid: 1f8bd1e1353a04e47a6be1126fefd6ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &114867607096250528
